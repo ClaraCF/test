@@ -1,0 +1,42 @@
+#!/bin/bash
+currentVersion="v1.0.0"
+
+
+function getLatestVersion{
+   printf $(curl -s https://api.github.com/repos/ClaraCF/test/releases/latest | grep tag_name | awk '{printf $2}' | sed s'\"\\' | sed s'\",\\')
+}
+
+
+function getLatestRelease{
+  curl -s https://api.github.com/repos/ClaraCF/test/releases/latest | grep zipball_url | sed s'\"zipball_url": "\\') | wget -
+}
+
+
+function checkForUpdate(){
+  version=$(getLatestVersion)
+
+  if [ currentVersion != version ]
+  then
+    echo UPDATE AVAILABLE. WANNA UPDATE?
+    read answer
+
+    if [ answer == "no" ]
+    then
+      return 0
+
+    else
+      getLatestRelease
+      unzip $version -d newVer
+      filename=`ls newVer`
+      mv newVer/$filename/* .
+      rm -rf newVer
+      
+      echo RESTART THE PROGRAM PLS \:\)
+      exit
+}
+
+echo "WELCOME TO MY NICE PROGRAM :D"
+echo Version: $currentVersion
+echo "O"
+echo "W"
+echo "O"
